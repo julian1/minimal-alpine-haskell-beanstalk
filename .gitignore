@@ -1,0 +1,7 @@
+dist
+beanstalk.zip
+docker-deploy/resources/
+docker-build/resources/
+docker-deploy/Main
+.cabal-sandbox
+cabal.sandbox.config
