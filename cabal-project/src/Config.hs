@@ -8,6 +8,8 @@ import qualified Database.PostgreSQL.Simple as PG( defaultConnectInfo, ConnectIn
 
 import Data.Aeson
 
+import qualified Data.ByteString.Lazy.Char8 as BL
+
 -- type MyConnectInfo = PG.ConnectInfo
 --    deriving (Show, Eq)
 -- can we write aeson functions
@@ -23,14 +25,19 @@ connectionInfo = PG.defaultConnectInfo {
 
 
 
-instance ToJSON PG.ConnectInfo
-  where toJSON (PG.ConnectInfo a b c d e )   =  object [
+instance ToJSON PG.ConnectInfo where 
+  toJSON (PG.ConnectInfo a b c d e )   =  object [
 
-           "connectHost" .= a, 
-           "connectPort" .= b 
+     "connectHost" .= a, 
+     "connectPort" .= b 
 
 
-          ] 
+    ] 
+      -- 
+
+
+myfunc = do
+  BL.putStrLn (encode connectionInfo )
 
 -- deriving (Show, Eq, Generic, ToJSON, FromJSON) -- deriving (Show, Eq)
 -- poolInfo
