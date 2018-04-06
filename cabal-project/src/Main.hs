@@ -22,7 +22,7 @@ import qualified Data.ByteString.Char8 as BS(empty, putStrLn, pack, unpack, conc
 import qualified Data.ByteString.Lazy.Char8 as LBS(empty, putStrLn, pack, unpack, concat, readFile, fromChunks)
 
 import qualified Data.Pool as Pool(createPool, withResource, Pool)
-import qualified Database.PostgreSQL.Simple as PG(connect, close, query, Connection)
+import qualified Database.PostgreSQL.Simple as PG(connect, close, query, Connection, defaultConnectInfo)
 import Database.PostgreSQL.Simple.Types as PG(Only(..))
 
 
@@ -50,7 +50,7 @@ import System.IO( hSetBuffering , stdout, BufferMode(LineBuffering))
 
 import Person(getPersonJSON)
 
-import qualified Config as Config(connectionInfo)
+import qualified Config as Config(getConnectionInfo)
 
 put = putStr
 puts = putStrLn
@@ -94,17 +94,39 @@ middlewareLogger app req respond = do
 main :: IO ()
 main = do
 
-  -- withStdoutLogger $ \logger -> do
+    -- withStdoutLogger $ \logger -> do
 
     -- TODO expose pool parameters to config...
 
-    -- stdout buffering,
+    -- set stdout buffering,
     -- https://stackoverflow.com/questions/12435794/putstrln-doesnt-print-to-console
-
     hSetBuffering stdout LineBuffering
 
 
-    pool <- Pool.createPool (PG.connect Config.connectionInfo) PG.close 1 10 10
+    -- app path for resources
+    --   if APP_PATH is defined in env, use it, otherwise use relative path
+    path' <- lookupEnv "APP_PATH"
+    let appPath = maybe "." id path'
+
+    putStrLn $ "appPath: " ++ appPath
+
+    -- read connection Info
+    connectionInfo <- Config.getConnectionInfo $ appPath ++ "/Config.json"
+
+    connectionInfo' <- case connectionInfo of 
+        Nothing -> do 
+          -- fail
+          let s = "Failed to get connectionInfo"
+          puts s 
+          error s 
+          -- unreachable and awful... TODO improve
+          return PG.defaultConnectInfo
+        Just ci -> do
+          puts "Read connectionInfo OK"
+          return ci
+
+    -- create conn pool
+    pool <- Pool.createPool (PG.connect connectionInfo') PG.close 1 10 10
 
     let warpSettings =
           setPort 3000
@@ -118,12 +140,7 @@ main = do
           >-> rewrite "whoot" "index.html"
 
 
-    -- path for static resources
-    --   if APP_PATH is defined in env, then use it, otherwise use relative path
-    --   could also, use parameter arg
-    appPath <- lookupEnv "APP_PATH"
-    let path' = maybe "." id appPath
-    let staticBase = path' ++ "/static"
+    let staticBase = appPath ++ "/static"
 
     putStrLn $ "staticBase: " ++ staticBase
 

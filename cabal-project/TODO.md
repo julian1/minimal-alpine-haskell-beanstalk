@@ -1,18 +1,17 @@
 
 ----
 
-config - json - aeson. or else command line.
 
 - static files. eg. with a list of urls that require hitting postgres.
   looks like there is middleware to do this,
   https://hackage.haskell.org/package/wai-middleware-static-0.8.1/docs/Network-Wai-Middleware-Static.html
 
 - need to hit concurrently.... though. using a bash loop doesn't do this.
+- database pool/conns, sleep 1.  stress test.  forkIO example.
 
+-- TODO expose pool parameters to config...
+      - eg. resource pool size limit also.
 
-        -- TODO expose pool parameters to config...
-
-- want resource pool size limit also.
 
 - systemd service file
 - docker  - so it gets called instead of init
@@ -21,20 +20,21 @@ config - json - aeson. or else command line.
 - prod
     https://groups.google.com/forum/#!msg/yesodweb/gJeUT3uUIkg/rcDaEtLUFVkJ
 
+- tls - apache proxy or... , or investiage warp tls, 
 
+- there's  an issue that just using print, putstrln etc. will get mixed up in the output log, when running concurrently.
 
 ----
 
-tls - apache proxy or... , or investiage warp tls, 
 
-- database pool/conns, sleep 1.  stress test.  forkIO example.
 
-confirm apt-get deps for debian/ubuntu
-
-- add extra stuff to log, from computation ...
+done - - add extra stuff to log, from computation ...
   - perhaps need vault - to hold value.
   - actually think we just log to stdout. although not sure how this gets sequenced. 
 
+done - confirm apt-get deps for debian/ubuntu
+
+done - config - json - aeson. or else command line.
 
 - done - nginx host pass through... for logging.
 
@@ -48,8 +48,6 @@ confirm apt-get deps for debian/ubuntu
 
 -----
 
-echo 'hi' 2>&1 | logger
 
-there's  an issue that just using print, putstrln etc. will get mixed up in the output log, when running concurrently.
 
 

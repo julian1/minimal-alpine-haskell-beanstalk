@@ -1,5 +1,6 @@
 {-
   https://github.com/bos/aeson/blob/master/examples/Simplest.hs
+  we cannot use generic deriving because we didn't author the 
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
@@ -11,20 +12,21 @@ import qualified Database.PostgreSQL.Simple as PG( defaultConnectInfo, ConnectIn
 
 import Data.Aeson
 
+
+import Control.Applicative (empty)
 import qualified Data.ByteString.Lazy.Char8 as BL
 
--- type MyConnectInfo = PG.ConnectInfo
---    deriving (Show, Eq)
--- can we write aeson functions
-
+{-
 connectionInfo :: PG.ConnectInfo
-connectionInfo = PG.defaultConnectInfo {
+-- connectionInfo = PG.defaultConnectInfo {
+connectionInfo = PG.ConnectInfo {
       PG.connectHost = "postgres.localnet2"
     , PG.connectPort = 5432
     , PG.connectDatabase = "test"
     , PG.connectUser = "test"
     , PG.connectPassword = "test"
 }
+-}
 
 
 instance ToJSON PG.ConnectInfo where 
@@ -35,6 +37,40 @@ instance ToJSON PG.ConnectInfo where
      "connectUser" .= user,
      "connectPassword" .= pass 
     ] 
+   -- toEncoding Coord{..} =
+
+
+instance FromJSON PG.ConnectInfo where 
+  parseJSON (Object v) = PG.ConnectInfo <$> 
+      v .: "connectHost"  <*> 
+      v .: "connectPort" <*> 
+      v .: "connectDatabase" <*> 
+      v .: "connectUser" <*> 
+      v .: "connectPassword"  
+
+  parseJSON _ = empty
+
+
+getConnectionInfo :: String -> IO  (Maybe PG.ConnectInfo)
+getConnectionInfo fileName = do
+  -- think all the IO handling might be done better in main...
+  s <- BL.readFile fileName
+  let c = decode s :: Maybe PG.ConnectInfo 
+  return c 
+ 
+  -- print $ encode PG.defaultConnectInfo 
+
+{- 
+test = do 
+  j <- getConnectionInfo "Config.json"
+  print j
+-} 
+
+
+
+-- type MyConnectInfo = PG.ConnectInfo
+--    deriving (Show, Eq)
+-- can we write aeson functions
 
 
 {-
@@ -43,22 +79,12 @@ instance FromJSON Coord where
                          v .: "x" <*>
                          v .: "y"
   parseJSON _ = empty
+
+    let m = PG.ConnectInfo <$> v .: "connectHost" <*> v .: "connecPort" <*> v .: "connectDatabase" <*> v .: "connectUser" <*> v .: "connectPassword"  in
 -}
 
-instance FromJSON PG.ConnectInfo where 
-  parseJSON (Object v) = PG.ConnectInfo   <$> v .: "connectHost"
-                          <*> v .: "connecPort"
-                          <*> v .: "connectDatabase"
-                          <*> v .: "connectUser"
-                          <*> v .: "connectPassword"
 
-      -- "connectHost" .= host, 
-    
-
-
-
-myfunc = do
-  BL.putStrLn (encode connectionInfo )
+  -- BL.putStrLn (encode connectionInfo )
 
 -- deriving (Show, Eq, Generic, ToJSON, FromJSON) -- deriving (Show, Eq)
 -- poolInfo

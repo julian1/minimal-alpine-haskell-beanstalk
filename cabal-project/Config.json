@@ -1,0 +1,8 @@
+{
+  "connectHost":    "postgres.localnet2", 
+  "connectPort":    5432, 
+  "connectDatabase": "test" , 
+  "connectUser":    "test" , 
+  "connectPassword": "test"
+}
+
