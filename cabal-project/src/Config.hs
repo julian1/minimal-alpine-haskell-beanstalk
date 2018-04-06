@@ -1,4 +1,6 @@
 
+{-# LANGUAGE OverloadedStrings #-}
+
 module Config where
 
 import qualified Database.PostgreSQL.Simple as PG( defaultConnectInfo, ConnectInfo(..))
@@ -22,7 +24,13 @@ connectionInfo = PG.defaultConnectInfo {
 
 
 instance ToJSON PG.ConnectInfo
-  where toJSON (PG.ConnectInfo a b c d e )   =  object [] 
+  where toJSON (PG.ConnectInfo a b c d e )   =  object [
+
+           "connectHost" .= a, 
+           "connectPort" .= b 
+
+
+          ] 
 
 -- deriving (Show, Eq, Generic, ToJSON, FromJSON) -- deriving (Show, Eq)
 -- poolInfo
