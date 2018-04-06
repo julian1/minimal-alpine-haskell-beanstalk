@@ -1,3 +1,6 @@
+{-
+  https://github.com/bos/aeson/blob/master/examples/Simplest.hs
+-}
 
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -24,16 +27,34 @@ connectionInfo = PG.defaultConnectInfo {
 }
 
 
-
 instance ToJSON PG.ConnectInfo where 
-  toJSON (PG.ConnectInfo a b c d e )   =  object [
-
-     "connectHost" .= a, 
-     "connectPort" .= b 
-
-
+  toJSON (PG.ConnectInfo host port db user pass)   =  object [
+     "connectHost" .= host, 
+     "connectPort" .= port, 
+     "connectDatabase" .= db, 
+     "connectUser" .= user,
+     "connectPassword" .= pass 
     ] 
-      -- 
+
+
+{-
+instance FromJSON Coord where
+  parseJSON (Object v) = Coord <$>
+                         v .: "x" <*>
+                         v .: "y"
+  parseJSON _ = empty
+-}
+
+instance FromJSON PG.ConnectInfo where 
+  parseJSON (Object v) = PG.ConnectInfo   <$> v .: "connectHost"
+                          <*> v .: "connecPort"
+                          <*> v .: "connectDatabase"
+                          <*> v .: "connectUser"
+                          <*> v .: "connectPassword"
+
+      -- "connectHost" .= host, 
+    
+
 
 
 myfunc = do
