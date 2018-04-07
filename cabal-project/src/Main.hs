@@ -95,8 +95,6 @@ middlewareLogger app req respond = do
 main :: IO ()
 main = do
 
-    -- withStdoutLogger $ \logger -> do
-
     -- TODO expose pool parameters to config...
 
     -- set stdout buffering,
@@ -146,9 +144,7 @@ main = do
 
     let staticMiddleware = staticPolicy (noDots >-> rewriteRules >-> addBase staticBase)
 
-
     putStrLn $ (++) "Listening on port " (show. Config.port $ config)
--- $ Prelude.show . getPort $ warpSettings
 
     runSettings warpSettings $ middlewareLogger $ staticMiddleware $ app pool
     -- runSettings warpSettings $ staticMiddleware $ app pool
