@@ -50,7 +50,8 @@ import System.IO( hSetBuffering , stdout, BufferMode(LineBuffering))
 
 import Person(getPersonJSON)
 
-import qualified Config as Config(getConnectionInfo)
+-- all
+import qualified Config --as Config(getConfig) ---getConnectionInfo)
 
 put = putStr
 puts = putStrLn
@@ -111,25 +112,25 @@ main = do
     putStrLn $ "appPath: " ++ appPath
 
     -- read connection Info
-    connectionInfo <- Config.getConnectionInfo $ appPath ++ "/Config.json"
+    config_ <- Config.getConfig $ appPath ++ "/Config.json"
 
-    connectionInfo' <- case connectionInfo of 
+    config <- case config_ of 
         Nothing -> do 
           -- fail
-          let s = "Failed to get connectionInfo"
+          let s = "Failed to get config"
           puts s 
-          -- fail runs in IO monad
+          -- fail runs in IO monad, and is recommended
           -- http://www.randomhacks.net/2007/03/10/haskell-8-ways-to-report-errors/
           fail s 
         Just ci -> do
-          puts "Read connectionInfo OK"
+          puts "Read config OK"
           return ci
 
     -- create conn pool
-    pool <- Pool.createPool (PG.connect connectionInfo') PG.close 1 10 10
+    pool <- Pool.createPool (PG.connect $ Config.connectInfo config) PG.close 1 10 10
 
     let warpSettings =
-          setPort 3000
+          setPort (Config.port config)
           $ setLogger requestLogger
           $ defaultSettings
 
@@ -146,7 +147,8 @@ main = do
     let staticMiddleware = staticPolicy (noDots >-> rewriteRules >-> addBase staticBase)
 
 
-    putStrLn $ (++) "Listening on port " $ Prelude.show . getPort $ warpSettings
+    putStrLn $ (++) "Listening on port " (show. Config.port $ config)
+-- $ Prelude.show . getPort $ warpSettings
 
     runSettings warpSettings $ middlewareLogger $ staticMiddleware $ app pool
     -- runSettings warpSettings $ staticMiddleware $ app pool

@@ -52,16 +52,6 @@ instance FromJSON PG.ConnectInfo where
 
   parseJSON _ = empty
 
-{-
-getConnectionInfo :: String -> IO  (Maybe PG.ConnectInfo)
-getConnectionInfo fileName = do
-  -- think all the IO handling might be done better in main...
-  s <- BL.readFile fileName
-  let c = decode s :: Maybe PG.ConnectInfo 
-  return c 
-
--}
-
 
 data Config = Config { 
 
@@ -86,6 +76,18 @@ test = do
 
 
  
+
+{-
+getConnectionInfo :: String -> IO  (Maybe PG.ConnectInfo)
+getConnectionInfo fileName = do
+  -- think all the IO handling might be done better in main...
+  s <- BL.readFile fileName
+  let c = decode s :: Maybe PG.ConnectInfo 
+  return c 
+
+-}
+
+
   -- print $ encode PG.defaultConnectInfo 
 
 {- 
