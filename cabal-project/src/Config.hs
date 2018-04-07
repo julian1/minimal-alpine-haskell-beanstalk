@@ -4,11 +4,13 @@
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 
 module Config where
 
 import qualified Database.PostgreSQL.Simple as PG( defaultConnectInfo, ConnectInfo(..))
 
+import GHC.Generics
 
 import Data.Aeson
 
@@ -50,13 +52,39 @@ instance FromJSON PG.ConnectInfo where
 
   parseJSON _ = empty
 
-
+{-
 getConnectionInfo :: String -> IO  (Maybe PG.ConnectInfo)
 getConnectionInfo fileName = do
   -- think all the IO handling might be done better in main...
   s <- BL.readFile fileName
   let c = decode s :: Maybe PG.ConnectInfo 
   return c 
+
+-}
+
+
+data Config = Config { 
+
+    port :: Int  , 
+    connectInfo :: PG.ConnectInfo 
+}
+  deriving (Show, Eq, Generic, ToJSON, FromJSON) -- deriving (Show, Eq)
+
+
+
+getConfig :: String -> IO  (Maybe Config )
+getConfig fileName = do
+  -- think all the IO handling might be done better in main...
+  s <- BL.readFile fileName
+  let c = decode s :: Maybe Config
+  return c 
+
+
+test = do 
+  j <- getConfig "Config.json"
+  print j
+
+
  
   -- print $ encode PG.defaultConnectInfo 
 

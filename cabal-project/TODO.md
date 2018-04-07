@@ -1,6 +1,8 @@
 
 ----
 
+--- SEt the port in the config...
+
 OKO - putting code on top level - will improve speed. because it won't have to keep  
         downloading.... cabal. i think.
 

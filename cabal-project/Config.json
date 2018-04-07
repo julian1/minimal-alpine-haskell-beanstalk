@@ -1,8 +1,13 @@
 {
-  "connectHost":    "postgres.localnet2", 
-  "connectPort":    5432, 
-  "connectDatabase": "test" , 
-  "connectUser":    "test" , 
-  "connectPassword": "test"
+
+  "port": 3000,
+
+  "connectInfo": {
+      "connectHost":    "postgres.localnet2", 
+      "connectPort":    5432, 
+      "connectDatabase": "test" , 
+      "connectUser":    "test" , 
+      "connectPassword": "test"
+  }
 }
 
