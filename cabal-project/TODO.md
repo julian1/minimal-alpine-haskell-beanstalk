@@ -1,6 +1,9 @@
 
 ----
 
+OKO - putting code on top level - will improve speed. because it won't have to keep  
+        downloading.... cabal. i think.
+
 
 - static files. eg. with a list of urls that require hitting postgres.
   looks like there is middleware to do this,
