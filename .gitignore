@@ -1,4 +1,4 @@
-old
+dist
 beanstalk.zip
-deploy/Main
-deploy/static
+docker-deploy/Main
+docker-deploy/static
