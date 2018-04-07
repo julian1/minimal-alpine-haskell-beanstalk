@@ -118,9 +118,9 @@ main = do
           -- fail
           let s = "Failed to get connectionInfo"
           puts s 
-          error s 
-          -- unreachable and awful... TODO improve
-          return PG.defaultConnectInfo
+          -- fail runs in IO monad
+          -- http://www.randomhacks.net/2007/03/10/haskell-8-ways-to-report-errors/
+          fail s 
         Just ci -> do
           puts "Read connectionInfo OK"
           return ci
@@ -133,7 +133,6 @@ main = do
           $ setLogger requestLogger
           $ defaultSettings
 
-    putStrLn $ (++) "Listening on port " $ Prelude.show . getPort $ warpSettings
 
     let rewriteRules =
           rewrite "" "index.html"
@@ -145,6 +144,9 @@ main = do
     putStrLn $ "staticBase: " ++ staticBase
 
     let staticMiddleware = staticPolicy (noDots >-> rewriteRules >-> addBase staticBase)
+
+
+    putStrLn $ (++) "Listening on port " $ Prelude.show . getPort $ warpSettings
 
     runSettings warpSettings $ middlewareLogger $ staticMiddleware $ app pool
     -- runSettings warpSettings $ staticMiddleware $ app pool
